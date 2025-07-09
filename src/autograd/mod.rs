@@ -4,8 +4,7 @@ use ndarray::{ArrayD, Axis};
 
 /// Trait implemented by every backward operation node.
 pub trait Backward {
-    /// Given the gradient flowing from the next layer, return the gradients with
-    /// respect to this operation's inputs.
+    /// Given the gradient flowing from the next layer, return the gradients with respect to this operation's inputs.
     fn backward(&self, gradient: &ArrayD<f32>) -> Vec<ArrayD<f32>>;
 }
 
