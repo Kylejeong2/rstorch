@@ -3,8 +3,15 @@ use rand::seq::SliceRandom;
 use super::batch::Batch;
 use super::dataset::Dataset;
 
+/**
+Turns a dataset into an iterator of mini-batches ready for training 
+*/
+
 /// Optional sampler: if None, sequential indices are used; otherwise a precomputed
 /// vector of indices (e.g. shuffled) is consumed.
+
+// TODO: add a sampler trait
+
 #[derive(Clone, Debug)]
 pub struct DataLoader<'a> {
     dataset: &'a Dataset,
@@ -13,7 +20,8 @@ pub struct DataLoader<'a> {
     cursor: usize,
 }
 
-impl<'a> DataLoader<'a> {
+impl<'a> DataLoader<'a> { 
+    // <'a> is lifetime param, doesn't cost anything since it is enforced by the compiler
     /// Create a new DataLoader with optional random shuffling.
     pub fn new(dataset: &'a Dataset, batch_size: usize, shuffle: bool) -> Self {
         let mut indices: Vec<usize> = (0..dataset.len()).collect();

@@ -6,4 +6,6 @@ edition = "2021"
 [dependencies]
 ndarray = "0.15"
 ndarray-rand = "0.14"
-rand = "0.8" 
+rand = "0.8"
+clap = { version = "4.5", features = ["derive"] }
+anyhow = "1.0" 
