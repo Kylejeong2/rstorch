@@ -1,11 +1,18 @@
 use std::env;
+use std::os::raw::c_int;
 
 use crate::Tensor;
 
-/// Initialise the (fake) process group. In real code this would call into MPI / NCCL.
-pub fn init_process_group(rank: usize, world_size: usize) {
-    env::set_var("OMPI_COMM_WORLD_RANK", rank.to_string());
-    env::set_var("OMPI_COMM_WORLD_SIZE", world_size.to_string());
+extern "C" {
+    fn init_process_group(rank: c_int, world_size: c_int);
+    fn broadcast_tensor(tensor: *mut std::ffi::c_void, src: c_int);
+    fn allreduce_sum_tensor(tensor: *mut std::ffi::c_void);
+}
+
+pub fn init_process_group_rs(rank: usize, world_size: usize) {
+    unsafe {
+        init_process_group(rank as c_int, world_size as c_int);
+    }
 }
 
 /// Return the integer rank of the current process.
@@ -24,16 +31,14 @@ pub fn get_world_size() -> usize {
         .unwrap_or(1)
 }
 
-/// Broadcast `tensor` from process `src` to all others.
-///
-/// This stub assumes single-process execution; it simply returns.
-pub fn broadcast_tensor(_tensor: &mut Tensor, _src: usize) {
-    // Real implementation would use MPI_Bcast / NCCL etc.
+pub fn broadcast_tensor_rs(tensor: &mut Tensor, src: usize) {
+    unsafe {
+        broadcast_tensor(tensor.tensor as *mut std::ffi::c_void, src as c_int);
+    }
 }
 
-/// In-place all-reduce (sum) over `tensor` across all processes.
-///
-/// Stub = no-op for single process.
-pub fn allreduce_sum_tensor(_tensor: &mut Tensor) {
-    // Real implementation would call MPI_Allreduce etc.
+pub fn allreduce_sum_tensor_rs(tensor: &mut Tensor) {
+    unsafe {
+        allreduce_sum_tensor(tensor.tensor as *mut std::ffi::c_void);
+    }
 }

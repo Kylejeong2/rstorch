@@ -1,5 +1,5 @@
 mod tensor;
 
-pub use tensor::Tensor;
+pub use tensor::{Tensor, CTensor};
 pub mod autograd;
 pub mod distributed; 
