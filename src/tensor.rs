@@ -37,6 +37,12 @@ extern "C" {
     
     fn get_item(tensor: *mut CTensor, indices: *mut c_int) -> c_float;
     fn to_device(tensor: *mut CTensor, device: *const c_char);
+    fn get_data(tensor: *mut CTensor) -> *mut c_float;
+    
+    fn sigmoid_tensor(tensor: *mut CTensor) -> *mut CTensor;
+    fn softmax_tensor(tensor: *mut CTensor, axis: c_int) -> *mut CTensor;
+    fn relu_tensor(tensor: *mut CTensor) -> *mut CTensor;
+    fn log_tensor(tensor: *mut CTensor) -> *mut CTensor;
 }
 
 pub trait GradFn {
@@ -63,6 +69,15 @@ impl std::fmt::Debug for Tensor {
             .field("numel", &self.numel)
             .field("requires_grad", &self.requires_grad)
             .finish()
+    }
+}
+
+impl Clone for Tensor {
+    fn clone(&self) -> Self {
+        let data = self.to_vec();
+        let mut new_tensor = Self::from_vec_device(data, &self.shape, &self.device);
+        new_tensor.requires_grad = self.requires_grad;
+        new_tensor
     }
 }
 
@@ -181,6 +196,23 @@ impl Tensor {
         &self.shape
     }
     
+    /// Convert tensor data to Vec<f32>
+    pub fn to_vec(&self) -> Vec<f32> {
+        if self.tensor.is_null() {
+            return vec![0.0; self.numel];
+        }
+        
+        unsafe {
+            let data_ptr = get_data(self.tensor);
+            if data_ptr.is_null() {
+                return vec![0.0; self.numel];
+            }
+            
+            let slice = std::slice::from_raw_parts(data_ptr, self.numel);
+            slice.to_vec()
+        }
+    }
+    
     /// Element-wise addition
     pub fn add(&self, other: &Self) -> Self {
         let result_tensor_ptr = unsafe { add_tensor(self.tensor, other.tensor) };
@@ -222,21 +254,6 @@ impl Tensor {
         }
     }
     
-    /// Sum of all elements or along an axis
-    pub fn sum(&self) -> Self {
-        let result_tensor_ptr = unsafe { sum_tensor(self.tensor, -1, false) };
-        
-        Self {
-            tensor: result_tensor_ptr,
-            shape: vec![1],
-            ndim: 1,
-            device: self.device.clone(),
-            numel: 1,
-            requires_grad: self.requires_grad,
-            grad: None,
-            grad_fn: None,
-        }
-    }
     
     /// Element-wise multiplication
     pub fn mul(&self, other: &Self) -> Self {
@@ -269,10 +286,155 @@ impl Tensor {
             grad_fn: None,
         }
     }
+    
+    /// Sigmoid activation function
+    pub fn sigmoid(&self) -> Self {
+        let result_tensor_ptr = unsafe { sigmoid_tensor(self.tensor) };
+        
+        Self {
+            tensor: result_tensor_ptr,
+            shape: self.shape.clone(),
+            ndim: self.ndim,
+            device: self.device.clone(),
+            numel: self.numel,
+            requires_grad: self.requires_grad,
+            grad: None,
+            grad_fn: None,
+        }
+    }
+    
+    /// Softmax activation function
+    pub fn softmax(&self, dim: i32) -> Self {
+        let result_tensor_ptr = unsafe { softmax_tensor(self.tensor, dim) };
+        
+        Self {
+            tensor: result_tensor_ptr,
+            shape: self.shape.clone(),
+            ndim: self.ndim,
+            device: self.device.clone(),
+            numel: self.numel,
+            requires_grad: self.requires_grad,
+            grad: None,
+            grad_fn: None,
+        }
+    }
+    
+    /// ReLU activation function
+    pub fn relu(&self) -> Self {
+        let result_tensor_ptr = unsafe { relu_tensor(self.tensor) };
+        
+        Self {
+            tensor: result_tensor_ptr,
+            shape: self.shape.clone(),
+            ndim: self.ndim,
+            device: self.device.clone(),
+            numel: self.numel,
+            requires_grad: self.requires_grad,
+            grad: None,
+            grad_fn: None,
+        }
+    }
+    
+    /// Natural logarithm
+    pub fn log(&self) -> Self {
+        let result_tensor_ptr = unsafe { log_tensor(self.tensor) };
+        
+        Self {
+            tensor: result_tensor_ptr,
+            shape: self.shape.clone(),
+            ndim: self.ndim,
+            device: self.device.clone(),
+            numel: self.numel,
+            requires_grad: self.requires_grad,
+            grad: None,
+            grad_fn: None,
+        }
+    }
+    
+    /// Element-wise subtraction
+    pub fn sub(&self, other: &Self) -> Self {
+        let result_tensor_ptr = unsafe { sub_tensor(self.tensor, other.tensor) };
+        
+        Self {
+            tensor: result_tensor_ptr,
+            shape: self.shape.clone(),
+            ndim: self.ndim,
+            device: self.device.clone(),
+            numel: self.numel,
+            requires_grad: self.requires_grad || other.requires_grad,
+            grad: None,
+            grad_fn: None,
+        }
+    }
+    
+    /// Element-wise multiplication (same as mul, for consistency)
+    pub fn elementwise_mul(&self, other: &Self) -> Self {
+        self.mul(other)
+    }
+    
+    /// Sum along axis
+    pub fn sum(&self, axis: i32, keepdim: bool) -> Self {
+        let result_tensor_ptr = unsafe { sum_tensor(self.tensor, axis, keepdim) };
+        
+        // Calculate resulting shape
+        let result_shape = if axis == -1 {
+            vec![1]
+        } else {
+            let mut new_shape = self.shape.clone();
+            if keepdim {
+                new_shape[axis as usize] = 1;
+            } else {
+                new_shape.remove(axis as usize);
+            }
+            new_shape
+        };
+        
+        let result_numel = result_shape.iter().product();
+        
+        Self {
+            tensor: result_tensor_ptr,
+            shape: result_shape,
+            ndim: if keepdim { self.ndim } else { self.ndim - 1 },
+            device: self.device.clone(),
+            numel: result_numel,
+            requires_grad: self.requires_grad,
+            grad: None,
+            grad_fn: None,
+        }
+    }
+    
+    /// Transpose (for 2D tensors)
+    pub fn transpose(&self) -> Self {
+        if self.ndim != 2 {
+            panic!("Transpose only supports 2D tensors");
+        }
+        
+        let new_shape = vec![self.shape[1], self.shape[0]];
+        let mut new_data = vec![0.0; self.numel];
+        let old_data = self.to_vec();
+        
+        // Transpose the data
+        for i in 0..self.shape[0] {
+            for j in 0..self.shape[1] {
+                let src_idx = i * self.shape[1] + j;
+                let dst_idx = j * self.shape[0] + i;
+                new_data[dst_idx] = old_data[src_idx];
+            }
+        }
+        
+        let mut result = Self::from_vec_device(new_data, &new_shape, &self.device);
+        result.requires_grad = self.requires_grad;
+        result
+    }
+    
+    /// Zero out gradients
+    pub fn zero_grad(&mut self) {
+        self.grad = None;
+    }
 }
 
 // Implement standard operators
-use std::ops::{Add, Mul};
+use std::ops::{Add, Mul, Div};
 
 impl Add for &Tensor {
     type Output = Tensor;
@@ -292,6 +454,13 @@ impl Mul for &Tensor {
     type Output = Tensor;
     fn mul(self, rhs: Self) -> Self::Output {
         self.mul(rhs)
+    }
+}
+
+impl Div<f32> for Tensor {
+    type Output = Tensor;
+    fn div(self, rhs: f32) -> Self::Output {
+        self.scalar_mul(1.0 / rhs)
     }
 }
 

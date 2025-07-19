@@ -3,7 +3,6 @@ use rstorch::Tensor;
 // Mock C functions for testing
 #[cfg(test)]
 mod mock_c_functions {
-    use super::*;
     use std::os::raw::{c_char, c_float, c_int};
     use rstorch::CTensor;
     
@@ -98,7 +97,7 @@ fn test_matmul_interface() {
 #[test]
 fn test_sum_interface() {
     let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[2, 2]);
-    let s = a.sum();
+    let s = a.sum(-1, false);  // Sum all elements (axis=-1 means all)
     
     // Sum should produce a scalar (1D tensor with 1 element)
     assert_eq!(s.shape(), &[1]);

@@ -18,7 +18,7 @@ pub struct Args {
     pub script: String,
 
     /// All remaining arguments are forwarded to the script
-    #[arg(trailing_var_arg = true)]
+    #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
     pub script_args: Vec<String>,
 }
 
@@ -53,7 +53,7 @@ mod tests {
     fn parse_cli() {
         let argv = [
             "prog",
-            "--nproc_per_node", "4",
+            "--nproc-per-node", "4",
             "--nnodes", "2",
             "train.py",
             "--lr", "0.01",

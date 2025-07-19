@@ -43,7 +43,8 @@ impl DistributedSampler {
         // 2. Pad / truncate to total_size so it's divisible.
         if self.total_size > all_indices.len() {
             let extra = self.total_size - all_indices.len();
-            all_indices.extend_from_slice(&all_indices[..extra]);
+            let padding: Vec<usize> = all_indices[..extra].to_vec();
+            all_indices.extend(padding);
         } else if self.total_size < all_indices.len() {
             all_indices.truncate(self.total_size);
         }

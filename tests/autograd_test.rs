@@ -1,4 +1,4 @@
-use rstorch::autograd::*;
+use rstorch::autograd::functions::*;
 use ndarray::ArrayD;
 
 #[test]

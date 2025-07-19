@@ -91,7 +91,7 @@ impl Dataset {
                         eprintln!("download error: {}", e);
                     }
                 }
-                if let Err(e) = extract_to_dir(zpath.to_string_lossy(), &path_name) {
+                if let Err(e) = extract_to_dir(&zpath, &path_name) {
                     eprintln!("extract error: {}", e);
                 }
             }

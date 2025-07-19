@@ -1,0 +1,52 @@
+// stochastic gradient descent
+use crate::optim::optimizer::{Optimizer, OptimizerParams};
+use crate::tensor::Tensor;
+use std::collections::HashMap;
+
+pub struct SGD {
+    pub params: OptimizerParams,
+    pub lr: f32,
+    pub momentum: f32,
+    velocity_cache: Vec<Tensor>,
+}
+
+impl SGD {
+    pub fn new(parameters: OptimizerParams, lr: f32, momentum: f32) -> Self {
+        let velocity_cache = parameters.parameters
+            .iter()
+            .map(|(_, _, param)| param.zeros_like())
+            .collect();
+        
+        Self {
+            params: parameters,
+            lr,
+            momentum,
+            velocity_cache,
+        }
+    }
+    
+    pub fn from_dict(parameters: HashMap<String, Tensor>, lr: f32, momentum: f32) -> Self {
+        let params = OptimizerParams::from_dict(parameters);
+        Self::new(params, lr, momentum)
+    }
+}
+
+impl Optimizer for SGD {
+    fn step(&mut self) {
+        for (i, (_, _, parameter)) in self.params.parameters.iter_mut().enumerate() {
+            if let Some(grad) = &parameter.grad {
+                let velocity = &mut self.velocity_cache[i];
+                
+                // velocity = momentum * velocity - lr * grad
+                *velocity = velocity.scalar_mul(self.momentum).add(&grad.scalar_mul(-self.lr));
+                
+                // parameter = parameter + velocity
+                *parameter = parameter.add(velocity);
+            }
+        }
+    }
+    
+    fn zero_grad(&mut self) {
+        self.params.zero_grad();
+    }
+}
