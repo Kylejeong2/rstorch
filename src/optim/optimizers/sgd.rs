@@ -1,4 +1,8 @@
-// stochastic gradient descent
+// Stochastic Gradient Descent optimizer - SGD with momentum support
+// Implements the SGD optimization algorithm for neural network parameter updates
+// Connected to: src/optim/optimizer.rs, src/tensor.rs
+// Used by: src/optim/optimizers/mod.rs, training scripts, examples
+
 use crate::optim::optimizer::{Optimizer, OptimizerParams};
 use crate::tensor::Tensor;
 use std::collections::HashMap;
@@ -14,7 +18,7 @@ impl SGD {
     pub fn new(parameters: OptimizerParams, lr: f32, momentum: f32) -> Self {
         let velocity_cache = parameters.parameters
             .iter()
-            .map(|(_, _, param)| param.zeros_like())
+            .map(|(_, _, param)| param.zeros_like().expect("Failed to create zeros_like tensor"))
             .collect();
         
         Self {

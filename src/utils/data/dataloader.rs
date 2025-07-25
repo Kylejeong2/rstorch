@@ -1,3 +1,8 @@
+// DataLoader iterator - Converts datasets into mini-batch iterators for training
+// Provides DataLoader that creates shuffled mini-batches from datasets with configurable batch size
+// Connected to: src/utils/data/dataset.rs, src/utils/data/batch.rs
+// Used by: Training loops, model training scripts, examples
+
 use rand::seq::SliceRandom;
 
 use super::batch::Batch;

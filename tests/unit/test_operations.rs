@@ -1,3 +1,8 @@
+// Tensor operations tests - Tests for tensor creation, manipulation, and arithmetic operations
+// Tests comprehensive tensor operations including creation, reshaping, arithmetic, and device handling
+// Connected to: src/tensor.rs, src/csrc/
+// Used by: Test suite verification of tensor operation correctness
+
 use rstorch::tensor::Tensor;
 
 #[test]

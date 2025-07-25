@@ -1,4 +1,9 @@
 
+// Build script for RSTorch - compiles C++ backend code and links dependencies
+// This file configures the build process for the C++ tensor implementation backend
+// Connected to: src/csrc/*.cpp/.h files (tensor_impl.cpp, tensor.h), and the compiled library is used by src/tensor.rs
+// Handles cross-platform linking of C++ standard library and compilation of tensor operations
+
 fn main() {
     cc::Build::new()
         .cpp(true)

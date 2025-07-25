@@ -1,3 +1,8 @@
+// Basic tensor functionality tests - Core tensor interface and operation tests
+// Tests fundamental tensor creation, operations, and interfaces with mock C functions
+// Connected to: src/tensor.rs, src/csrc/tensor.h
+// Used by: Test suite verification of basic tensor functionality
+
 use rstorch::Tensor;
 
 // Mock C functions for testing

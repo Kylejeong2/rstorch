@@ -1,3 +1,8 @@
+// Tensor C interface header - Core tensor structure and C API declarations
+// Provides CTensor struct definition and C interface functions for tensor operations
+// Connected to: src/csrc/tensor.cpp, src/csrc/tensor_impl.cpp, src/tensor.rs
+// Used by: src/csrc/cpu.h, src/csrc/cuda.h, src/csrc/distributed.h, all C++ implementations
+
 #ifndef TENSOR_H
 #define TENSOR_H
 

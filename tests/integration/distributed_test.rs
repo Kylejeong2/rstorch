@@ -1,3 +1,8 @@
+// Distributed functionality tests - Tests for multi-process and multi-GPU distributed operations
+// Tests distributed tensor operations, process group management, and environment variable handling
+// Connected to: src/distributed/distributed.rs, src/tensor.rs
+// Used by: Test suite verification of distributed training functionality
+
 use rstorch::distributed::{get_rank, get_world_size, init_process_group_rs};
 use rstorch::{Tensor, CTensor};
 use std::env;

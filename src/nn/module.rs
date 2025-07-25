@@ -1,3 +1,8 @@
+// Neural network module trait and base implementation - defines the interface for neural network layers
+// This file provides the Module trait that all neural network layers implement, along with parameter management
+// Connected to: src/tensor.rs (tensor operations), src/nn/modules/ (concrete layer implementations), src/optim/ (optimizer access to parameters)
+// Used by: All neural network layers (Linear, Conv2d, etc.), training loops, and model serialization
+
 use crate::tensor::Tensor;
 use std::collections::HashMap;
 use std::fmt;
@@ -10,6 +15,7 @@ pub trait Parameter {
     fn shape(&self) -> &[usize];
     fn data(&self) -> &Tensor;
     fn data_mut(&mut self) -> &mut Tensor;
+    fn set_data(&mut self, data: Vec<f32>) -> Result<(), String>;
 }
 
 pub trait Module: fmt::Display {
@@ -61,10 +67,10 @@ pub trait Module: fmt::Display {
             let key = format!("param{}", i);
             if let Some(data) = state_dict.get(&key) {
                 if param.shape().iter().product::<usize>() != data.len() {
-                    eprintln!("Warning: state_dict shape does not match parameter shape");
+                    return Err(format!("Shape mismatch for parameter {}: expected {}, got {}", 
+                                     i, param.shape().iter().product::<usize>(), data.len()));
                 }
-                // Note: Implementation would need to update parameter data
-                // This requires the Parameter trait to have a method to set data
+                param.set_data(data.clone())?;
             }
         }
         Ok(())

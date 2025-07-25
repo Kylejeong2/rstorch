@@ -1,3 +1,8 @@
+// Distributed sampler - Splits dataset across multiple processes for distributed training
+// Provides DistributedSampler that partitions datasets for data-parallel training across multiple nodes/GPUs
+// Connected to: src/utils/data/dataset.rs, src/distributed/distributed.rs
+// Used by: Distributed training scripts, multi-process data loading
+
 use super::dataset::Dataset;
 
 /// Sampler that splits dataset indices across multiple processes for

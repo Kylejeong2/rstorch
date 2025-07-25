@@ -1,3 +1,8 @@
+// Neural network module tests - Tests for neural network layers, activations, and loss functions
+// Tests neural network components including layers, activation functions, loss functions, and functional operations
+// Connected to: src/nn/
+// Used by: Test suite verification of neural network functionality
+
 use rstorch::nn::{Module, Linear, Sigmoid, Softmax, ReLU, MSELoss, CrossEntropyLoss, Loss};
 use rstorch::nn::functional;
 use rstorch::tensor::Tensor;

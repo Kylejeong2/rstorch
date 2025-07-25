@@ -1,3 +1,8 @@
+// Neural network functional operations - Pure function implementations
+// Provides stateless implementations of common neural network operations and loss functions
+// Connected to: src/tensor.rs, src/nn/loss.rs, src/nn/activation.rs
+// Used by: src/nn/loss.rs, src/nn/activation.rs, src/nn/modules/, tests/test_nn.rs
+
 use crate::tensor::Tensor;
 
 pub fn sigmoid(input: &Tensor) -> Tensor {

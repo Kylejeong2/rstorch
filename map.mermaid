@@ -1,0 +1,64 @@
+classDiagram
+    class Tensor {
+        +data : *mut c_float
+        +shape, strides, device
+        +requires_grad : bool
+        +grad : Option<Tensor>
+    }
+
+    class CTensor
+    CTensor : <<CRepr>>
+
+    class Autograd {
+        +functions
+        +Backward trait
+    }
+    class AutogradFunctions
+
+    class NN {
+        +Module trait
+        +Parameter trait
+        +modules, activation, loss, functional, parallel
+    }
+
+    class Optim {
+        +Optimizer trait
+        +SGD
+    }
+
+    class Utils {
+        +functions
+        +data (Dataset, Dataloader)
+    }
+
+    class TorchVision {
+        +datasets (MNIST)
+        +transforms
+    }
+
+    class Distributed {
+        +distributed.rs
+        +run (main)
+    }
+
+    Tensor <|-- CTensor
+
+    Autograd --> Tensor : builds graph of
+    AutogradFunctions --> Autograd
+
+    NN --> Tensor : consumes
+    NN --> Autograd : uses gradients
+    NNmodules --> NN
+    NNactivation --> NN
+    NNloss --> NN
+    NNparallel --> Distributed
+
+    Optim --> Tensor : updates params
+    Optim --> NN : accesses Parameter
+    SGD --> Optim
+
+    UtilsData --> Tensor : wraps batches
+    TorchVision --> UtilsData : yields
+
+    Distributed --> Tensor
+    Distributed --> NN

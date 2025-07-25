@@ -1,3 +1,8 @@
+// Dataset container - Main dataset structure with download and splitting functionality
+// Provides Dataset struct for managing collections of examples with metadata and utilities
+// Connected to: src/utils/data/example.rs, src/utils/data/field.rs, src/utils/functions.rs
+// Used by: src/utils/data/dataloader.rs, src/utils/data/distributed.rs, src/torchvision/datasets/
+
 use std::fs;
 use std::path::{Path, PathBuf};
 

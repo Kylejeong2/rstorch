@@ -1,3 +1,8 @@
+// Neural network loss functions - MSE and CrossEntropy loss implementations
+// Provides Loss trait and specific loss function implementations for training models
+// Connected to: src/nn/module.rs, src/nn/functional.rs, src/tensor.rs
+// Used by: src/nn/mod.rs, training scripts, tests/test_nn.rs
+
 use crate::nn::module::{Module, ModuleBase, Parameter};
 use crate::Tensor;
 use std::fmt::{self, Display};

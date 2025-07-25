@@ -1,3 +1,8 @@
+// Optimizer trait and parameter management for neural network training
+// This file defines the Optimizer trait and OptimizerParams for managing trainable parameters
+// Connected to: src/tensor.rs (parameter tensors), src/nn/module.rs (model parameters), src/optim/optimizers/ (concrete optimizer implementations)
+// Used by: Training loops, concrete optimizers (SGD, Adam, etc.)
+
 use crate::tensor::Tensor;
 use std::collections::HashMap;
 

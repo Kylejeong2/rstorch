@@ -17,4 +17,58 @@ tar = "0.4"
 zip = "0.6"
 
 [build-dependencies]
-cc = "1.0" 
+cc = "1.0"
+
+# Unit tests
+[[test]]
+name = "test_tensor_unit"
+path = "tests/unit/test_tensor_unit.rs"
+
+[[test]]
+name = "test_nn_unit"
+path = "tests/unit/test_nn_unit.rs"
+
+[[test]]
+name = "test_optim_unit"
+path = "tests/unit/test_optim_unit.rs"
+
+[[test]]
+name = "autograd_test"
+path = "tests/unit/autograd_test.rs"
+
+[[test]]
+name = "test_autograd"
+path = "tests/unit/test_autograd.rs"
+
+[[test]]
+name = "basic"
+path = "tests/unit/basic.rs"
+
+[[test]]
+name = "test_operations"
+path = "tests/unit/test_operations.rs"
+
+# Integration tests
+[[test]]
+name = "test_full_training"
+path = "tests/integration/test_full_training.rs"
+
+[[test]]
+name = "test_nn_components"
+path = "tests/integration/test_nn_components.rs"
+
+[[test]]
+name = "test_nn"
+path = "tests/integration/test_nn.rs"
+
+[[test]]
+name = "test_dataset"
+path = "tests/integration/test_dataset.rs"
+
+[[test]]
+name = "distributed_test"
+path = "tests/integration/distributed_test.rs"
+
+[[test]]
+name = "test_distributed"
+path = "tests/integration/test_distributed.rs" 

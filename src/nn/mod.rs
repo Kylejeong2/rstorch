@@ -1,3 +1,8 @@
+// Neural network module - provides layers, activation functions, loss functions, and training utilities
+// This module contains all neural network components including layers, optimizers, and utilities
+// Connected to: src/tensor.rs (tensor operations), src/autograd/ (backpropagation), src/optim/ (optimizers)
+// Used by: Training scripts, model definitions, and the distributed training system
+
 pub mod module;
 pub mod parameter;
 pub mod modules;

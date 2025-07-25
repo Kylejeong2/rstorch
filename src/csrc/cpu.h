@@ -1,3 +1,8 @@
+// CPU tensor operations header - Declarations for CPU-based tensor computations
+// Provides function declarations for all CPU implementations of tensor operations
+// Connected to: src/csrc/cpu.cpp, src/csrc/tensor.h, src/tensor.rs
+// Used by: src/csrc/tensor.cpp, CPU tensor operation implementations
+
 #ifndef CPU_H
 #define CPU_H
 

@@ -1,3 +1,8 @@
+// Distributed run utility - MPI-based multi-process training launcher
+// Provides command-line interface and process spawning via mpiexec for distributed training
+// Connected to: src/distributed/run/main.rs
+// Used by: src/distributed/run/main.rs, distributed training scripts
+
 use std::process::Command;
 use clap::Parser;
 

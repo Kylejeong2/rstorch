@@ -1,3 +1,8 @@
+// Linear (fully connected) layer implementation - performs linear transformation y = xW^T + b
+// This file implements the Linear layer which applies a linear transformation to incoming data
+// Connected to: src/nn/module.rs (Module trait), src/nn/parameter.rs (weight/bias parameters), src/tensor.rs (matrix operations)
+// Used by: Neural network models, multi-layer perceptrons, classification/regression heads
+
 use crate::tensor::Tensor;
 use crate::nn::module::{Module, ModuleBase, Parameter};
 use crate::nn::parameter::ParameterTensor;
@@ -53,6 +58,7 @@ impl Module for Linear {
         let x_2d = if x.ndim == 1 {
             // Convert 1D input to [1, input_dim]
             Tensor::from_vec(x.to_vec(), &[1, x.shape()[0]])
+                .map_err(|e| format!("Failed to reshape input: {}", e))?
         } else {
             x.clone()
         };
@@ -71,7 +77,8 @@ impl Module for Linear {
         
         // If input was 1D, output should be 1D
         if x.ndim == 1 {
-            Ok(Tensor::from_vec(result.to_vec(), &[result.shape()[1]]))
+            Ok(Tensor::from_vec(result.to_vec(), &[result.shape()[1]])
+                .map_err(|e| format!("Failed to reshape output: {}", e))?)
         } else {
             Ok(result)
         }

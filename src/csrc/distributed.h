@@ -1,3 +1,8 @@
+// Distributed operations header - Declarations for multi-GPU/multi-node tensor operations
+// Provides function declarations for NCCL-based distributed tensor operations and process group management
+// Connected to: src/csrc/distributed.cpp, src/csrc/tensor.h, src/distributed/distributed.rs
+// Used by: src/csrc/tensor.cpp, src/distributed/distributed.rs, distributed training implementations
+
 #ifndef DISTRIBUTED_H
 #define DISTRIBUTED_H
 #include "tensor.h"

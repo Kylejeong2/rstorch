@@ -1,3 +1,8 @@
+// Dataset and data loading tests - Tests for data processing, batching, and loading functionality
+// Tests dataset creation, data loading, batching, and distributed sampling components
+// Connected to: src/utils/data/
+// Used by: Test suite verification of data pipeline functionality
+
 use rstorch::utils::data::{Dataset, Example, Field, Batch, DataLoader, DistributedSampler};
 
 fn create_test_dataset() -> Dataset {

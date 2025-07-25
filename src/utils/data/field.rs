@@ -1,3 +1,8 @@
+// Field metadata structure - Describes data transformations and field properties
+// Provides Field struct for defining metadata and transformations on dataset examples
+// Connected to: src/utils/data/example.rs, src/utils/data/dataset.rs
+// Used by: src/utils/data/dataset.rs, dataset processing pipelines
+
 use super::example::Example;
 use std::fmt;
 

@@ -1,3 +1,8 @@
+// CUDA tensor operations header - Declarations for GPU-accelerated tensor computations
+// Provides CUDA kernel and host function declarations for GPU tensor operations
+// Connected to: src/csrc/cuda.cu, src/csrc/tensor.h, src/tensor.rs
+// Used by: src/csrc/tensor.cpp, GPU tensor operation implementations
+
 #ifndef CUDA_KERNEL_H_
 #define CUDA_KERNEL_H_
 

@@ -1,3 +1,8 @@
+// Distributed neural network tests - Tests for distributed data parallel training functionality
+// Tests distributed data parallel wrapper, process management, and distributed neural network operations
+// Connected to: src/distributed/distributed.rs, src/nn/parallel.rs, src/nn/modules/
+// Used by: Test suite verification of distributed neural network training
+
 use rstorch::distributed::{get_rank, get_world_size, init_process_group_rs};
 use rstorch::nn::{Module, DistributedDataParallel, Linear};
 use rstorch::tensor::Tensor;

@@ -1,3 +1,8 @@
+// Utility functions - Data generation, download, extraction, and progress tracking
+// Provides helper functions for random data generation, file downloads, archive extraction, and progress visualization
+// Connected to: src/utils/data/dataset.rs, src/torchvision/datasets/mnist.rs
+// Used by: src/utils/data/dataset.rs, dataset download functionality, examples
+
 use reqwest::blocking::Client;
 
 use std::fs::{self, File};

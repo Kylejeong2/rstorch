@@ -1,3 +1,8 @@
+// Image/tensor transforms - Data preprocessing transforms for computer vision
+// Provides Transform trait and common preprocessing operations like reshaping and composition
+// Connected to: src/tensor.rs, src/torchvision/datasets/
+// Used by: src/torchvision/datasets/mnist.rs, image preprocessing pipelines, training scripts
+
 use crate::tensor::Tensor;
 
 pub trait Transform {

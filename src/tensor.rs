@@ -1,3 +1,8 @@
+// Core tensor implementation with C++ backend integration
+// This file defines the main Tensor struct and operations, providing a Rust interface to C++ tensor operations
+// Connected to: src/csrc/*.cpp/.h (C++ backend), src/autograd/ (gradient computation), src/nn/ (neural network layers)
+// Used by: All other modules that need tensor operations (nn/, optim/, utils/, distributed/)
+
 use std::os::raw::{c_char, c_float, c_int};
 use std::ffi::CString;
 use std::ptr;
@@ -75,20 +80,21 @@ impl std::fmt::Debug for Tensor {
 impl Clone for Tensor {
     fn clone(&self) -> Self {
         let data = self.to_vec();
-        let mut new_tensor = Self::from_vec_device(data, &self.shape, &self.device);
+        let mut new_tensor = Self::from_vec_device(data, &self.shape, &self.device)
+            .expect("Failed to clone tensor");
         new_tensor.requires_grad = self.requires_grad;
         new_tensor
     }
 }
 
 impl Tensor {
-    pub fn new(data: Option<Vec<f32>>, device: &str, requires_grad: bool) -> Self {
+    pub fn new(data: Option<Vec<f32>>, device: &str, requires_grad: bool) -> Result<Self, String> {
         if let Some(mut data_vec) = data {
             let shape = if data_vec.len() == 1 { vec![1] } else { vec![data_vec.len()] };
             
             let shape_ctype: Vec<c_int> = shape.iter().map(|&x| x as c_int).collect();
             let ndim_ctype = shape.len() as c_int;
-            let device_cstring = CString::new(device).expect("Invalid device string");
+            let device_cstring = CString::new(device).map_err(|_| "Invalid device string")?;
             
             let numel = shape.iter().product();
             
@@ -101,7 +107,11 @@ impl Tensor {
                 )
             };
             
-            Self {
+            if tensor_ptr.is_null() {
+                return Err("Failed to create tensor: C function returned null pointer".to_string());
+            }
+            
+            Ok(Self {
                 tensor: tensor_ptr,
                 shape,
                 ndim: ndim_ctype as usize,
@@ -110,9 +120,9 @@ impl Tensor {
                 requires_grad,
                 grad: None,
                 grad_fn: None,
-            }
+            })
         } else {
-            Self {
+            Ok(Self {
                 tensor: ptr::null_mut(),
                 shape: vec![],
                 ndim: 0,
@@ -121,20 +131,23 @@ impl Tensor {
                 requires_grad,
                 grad: None,
                 grad_fn: None,
-            }
+            })
         }
     }
     
-    pub fn from_vec(data: Vec<f32>, shape: &[usize]) -> Self {
+    pub fn from_vec(data: Vec<f32>, shape: &[usize]) -> Result<Self, String> {
         Self::from_vec_device(data, shape, "cpu")
     }
     
-    pub fn from_vec_device(mut data: Vec<f32>, shape: &[usize], device: &str) -> Self {
+    pub fn from_vec_device(mut data: Vec<f32>, shape: &[usize], device: &str) -> Result<Self, String> {
         let shape_ctype: Vec<c_int> = shape.iter().map(|&x| x as c_int).collect();
         let ndim_ctype = shape.len() as c_int;
-        let device_cstring = CString::new(device).expect("Invalid device string");
+        let device_cstring = CString::new(device).map_err(|_| "Invalid device string")?;
         
         let numel = shape.iter().product();
+        if data.len() != numel {
+            return Err(format!("Data length {} doesn't match shape size {}", data.len(), numel));
+        }
         
         let tensor_ptr = unsafe {
             create_tensor(
@@ -145,7 +158,11 @@ impl Tensor {
             )
         };
         
-        Self {
+        if tensor_ptr.is_null() {
+            return Err("Failed to create tensor: C function returned null pointer".to_string());
+        }
+        
+        Ok(Self {
             tensor: tensor_ptr,
             shape: shape.to_vec(),
             ndim: shape.len(),
@@ -154,18 +171,26 @@ impl Tensor {
             requires_grad: false,
             grad: None,
             grad_fn: None,
-        }
+        })
     }
     
-    pub fn zeros(shape: &[usize]) -> Self {
+    pub fn zeros(shape: &[usize]) -> Result<Self, String> {
         let data = vec![0.0; shape.iter().product()];
         Self::from_vec(data, shape)
     }
     
-    pub fn ones_like(&self) -> Self {
+    pub fn ones_like(&self) -> Result<Self, String> {
+        if self.tensor.is_null() {
+            return Err("Cannot create ones_like for null tensor".to_string());
+        }
+        
         let result_tensor_ptr = unsafe { ones_like_tensor(self.tensor) };
         
-        Self {
+        if result_tensor_ptr.is_null() {
+            return Err("Failed to create ones_like tensor: C function returned null pointer".to_string());
+        }
+        
+        Ok(Self {
             tensor: result_tensor_ptr,
             shape: self.shape.clone(),
             ndim: self.ndim,
@@ -174,13 +199,21 @@ impl Tensor {
             requires_grad: false,
             grad: None,
             grad_fn: None,
-        }
+        })
     }
     
-    pub fn zeros_like(&self) -> Self {
+    pub fn zeros_like(&self) -> Result<Self, String> {
+        if self.tensor.is_null() {
+            return Err("Cannot create zeros_like for null tensor".to_string());
+        }
+        
         let result_tensor_ptr = unsafe { zeros_like_tensor(self.tensor) };
         
-        Self {
+        if result_tensor_ptr.is_null() {
+            return Err("Failed to create zeros_like tensor: C function returned null pointer".to_string());
+        }
+        
+        Ok(Self {
             tensor: result_tensor_ptr,
             shape: self.shape.clone(),
             ndim: self.ndim,
@@ -189,7 +222,7 @@ impl Tensor {
             requires_grad: false,
             grad: None,
             grad_fn: None,
-        }
+        })
     }
     
     pub fn shape(&self) -> &[usize] {
@@ -422,7 +455,8 @@ impl Tensor {
             }
         }
         
-        let mut result = Self::from_vec_device(new_data, &new_shape, &self.device);
+        let mut result = Self::from_vec_device(new_data, &new_shape, &self.device)
+            .expect("Failed to transpose tensor");
         result.requires_grad = self.requires_grad;
         result
     }

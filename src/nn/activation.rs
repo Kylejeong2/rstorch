@@ -1,3 +1,8 @@
+// Activation function implementations - provides various non-linear activation functions for neural networks
+// This file implements activation functions like Sigmoid, ReLU, Softmax as neural network modules
+// Connected to: src/tensor.rs (activation operations), src/nn/module.rs (Module trait)
+// Used by: Neural network layers to add non-linearity between linear transformations
+
 use crate::tensor::Tensor;
 use crate::nn::module::{Module, ModuleBase};
 use std::fmt;

@@ -1,3 +1,8 @@
+// MNIST dataset loader - Handwritten digit recognition dataset implementation
+// Provides MNIST dataset loading, preprocessing, and train/test splitting functionality
+// Connected to: src/utils/data/dataset.rs, src/utils/functions.rs, src/torchvision/transforms.rs
+// Used by: Computer vision training examples, digit recognition tasks, dataset benchmarks
+
 use std::fs::File;
 use std::io::{BufReader, Read};
 use std::path::Path;

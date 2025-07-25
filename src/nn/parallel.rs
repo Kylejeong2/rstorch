@@ -1,3 +1,8 @@
+// Distributed data parallel wrapper - Multi-GPU and multi-node training support
+// Provides DistributedDataParallel wrapper that synchronizes model parameters and gradients across devices
+// Connected to: src/nn/module.rs, src/distributed/distributed.rs, src/tensor.rs
+// Used by: Distributed training scripts, multi-GPU training setups
+
 use crate::nn::module::{Module, Parameter};
 use crate::distributed::{broadcast_tensor_rs, allreduce_sum_tensor_rs, get_world_size};
 use crate::tensor::Tensor;
@@ -21,7 +26,7 @@ impl DistributedDataParallel {
     fn broadcast_parameters(&mut self) {
         for param in self.module.parameters_mut() {
             let mut tensor = param.data().clone();
-            broadcast_tensor_rs(&mut tensor, 0);
+            let _ = broadcast_tensor_rs(&mut tensor, 0);
             // Note: This would need a way to update the parameter's data
             // which might require extending the Parameter trait
         }
@@ -30,8 +35,8 @@ impl DistributedDataParallel {
     /// Everytime a gradient is assigned to some value, it calculates mean of this gradient among all devices
     fn allreduce_grads_hook(grad: &mut Tensor) -> Tensor {
         let mut avg_grad = grad.clone();
-        allreduce_sum_tensor_rs(&mut avg_grad);
-        let world_size = get_world_size() as f32;
+        let _ = allreduce_sum_tensor_rs(&mut avg_grad);
+        let world_size = get_world_size().unwrap_or(1) as f32;
         avg_grad / world_size
     }
     

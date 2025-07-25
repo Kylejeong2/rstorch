@@ -1,3 +1,8 @@
+// Autograd functions for backpropagation - implements gradient computation for various operations
+// This file contains backward pass implementations for all tensor operations that support automatic differentiation
+// Connected to: src/tensor.rs (GradFn trait), src/nn/ (neural network layer backward passes)
+// Used by: Training loops, optimizer updates, and any tensor operations that require gradients
+
 pub use self::ops::*;
 
 use ndarray::{ArrayD, Axis};

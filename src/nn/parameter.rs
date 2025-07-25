@@ -1,3 +1,8 @@
+// Parameter tensor wrapper for neural network layers - wraps tensors to make them trainable parameters
+// This file defines ParameterTensor which wraps regular tensors to mark them as learnable parameters
+// Connected to: src/tensor.rs (underlying tensor), src/nn/module.rs (Parameter trait), src/nn/modules/ (layer weights/biases)
+// Used by: All neural network layers that have trainable parameters (Linear, Conv2d, etc.)
+
 use crate::tensor::Tensor;
 
 pub struct ParameterTensor {
@@ -11,7 +16,8 @@ impl ParameterTensor {
         let mut rng = rand::thread_rng();
         use rand::Rng;
         let vec_data: Vec<f32> = (0..numel).map(|_| rng.gen_range(-1.0..1.0)).collect();
-        let mut tensor = Tensor::from_vec_device(vec_data, shape, "cpu");
+        let mut tensor = Tensor::from_vec_device(vec_data, shape, "cpu")
+            .expect("Failed to create parameter tensor");
         tensor.requires_grad = true;
         Self {
             base: tensor,
@@ -50,5 +56,17 @@ impl crate::nn::module::Parameter for ParameterTensor {
     
     fn data_mut(&mut self) -> &mut Tensor {
         &mut self.base
+    }
+    
+    fn set_data(&mut self, data: Vec<f32>) -> Result<(), String> {
+        if data.len() != self.base.numel {
+            return Err(format!("Data length mismatch: expected {}, got {}", self.base.numel, data.len()));
+        }
+        
+        // Create new tensor with same shape but new data
+        let new_tensor = Tensor::from_vec_device(data, &self.base.shape, &self.base.device)?;
+        self.base = new_tensor;
+        self.base.requires_grad = true; // Parameters should require gradients
+        Ok(())
     }
 }

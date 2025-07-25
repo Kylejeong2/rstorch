@@ -1,3 +1,8 @@
+// Autograd backward functions tests - Unit tests for automatic differentiation backward passes
+// Tests backward pass implementations for various tensor operations and their gradient computations
+// Connected to: src/autograd/functions.rs
+// Used by: Test suite verification of gradient computation correctness
+
 use rstorch::autograd::functions::*;
 use ndarray::ArrayD;
 
