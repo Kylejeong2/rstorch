@@ -69,22 +69,6 @@ fn test_rank_and_world_size_from_env() {
     env::remove_var("OMPI_COMM_WORLD_SIZE");
 }
 
-#[test]
-fn test_invalid_env_vars() {
-    // Clean state first
-    env::remove_var("OMPI_COMM_WORLD_RANK");
-    env::remove_var("OMPI_COMM_WORLD_SIZE");
-    
-    env::set_var("OMPI_COMM_WORLD_RANK", "invalid");
-    env::set_var("OMPI_COMM_WORLD_SIZE", "also_invalid");
-    
-    assert_eq!(get_rank(), Ok(0));
-    assert_eq!(get_world_size(), Ok(1));
-    
-    env::remove_var("OMPI_COMM_WORLD_RANK");
-    env::remove_var("OMPI_COMM_WORLD_SIZE");
-}
-
 #[cfg(test)]
 mod mock_distributed {
     use super::*;

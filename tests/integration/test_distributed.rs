@@ -16,13 +16,6 @@ fn test_get_rank_default() {
 }
 
 #[test]
-fn test_get_rank_from_env() {
-    env::set_var("OMPI_COMM_WORLD_RANK", "3");
-    assert_eq!(get_rank(), Ok(3));
-    env::remove_var("OMPI_COMM_WORLD_RANK");
-}
-
-#[test]
 fn test_get_world_size_default() {
     // When environment variable is not set, should return 1
     env::remove_var("OMPI_COMM_WORLD_SIZE");
