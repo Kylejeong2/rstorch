@@ -6,7 +6,7 @@
 use rstorch::{
     Tensor,
     optim::{SGD, OptimizerParams, Optimizer},
-    nn::{Linear, Parameter}
+    nn::{Linear, Module}
 };
 use std::collections::HashMap;
 
@@ -174,7 +174,7 @@ fn test_sgd_with_different_momentum() {
 #[test]
 fn test_optimizer_with_actual_model() {
     // Test creating optimizer from actual model parameters
-    let mut layer = Linear::new(2, 1, true);
+    let layer = Linear::new(2, 1, true);
     
     // Extract parameters from the model
     let mut params_vec = Vec::new();

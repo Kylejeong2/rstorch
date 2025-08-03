@@ -10,7 +10,7 @@ use rstorch::tensor::Tensor;
 #[test]
 fn test_linear_layer() {
     let linear = Linear::new(3, 2, true);
-    let input = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[1, 3]);
+    let input = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[1, 3]).unwrap();
     
     let output = linear.forward(&[&input]).unwrap();
     assert_eq!(output.shape(), &[1, 2]);
@@ -22,7 +22,7 @@ fn test_linear_layer_batch() {
     let input = Tensor::from_vec(
         vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
         &[2, 4]
-    );
+    ).unwrap();
     
     let output = linear.forward(&[&input]).unwrap();
     assert_eq!(output.shape(), &[2, 3]);
@@ -31,7 +31,7 @@ fn test_linear_layer_batch() {
 #[test]
 fn test_linear_layer_no_bias() {
     let linear = Linear::new(3, 2, false);
-    let input = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[1, 3]);
+    let input = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[1, 3]).unwrap();
     
     let output = linear.forward(&[&input]).unwrap();
     assert_eq!(output.shape(), &[1, 2]);
@@ -40,7 +40,7 @@ fn test_linear_layer_no_bias() {
 #[test]
 fn test_sigmoid_activation() {
     let sigmoid = Sigmoid::new();
-    let input = Tensor::from_vec(vec![0.0, 1.0, -1.0, 2.0], &[2, 2]);
+    let input = Tensor::from_vec(vec![0.0, 1.0, -1.0, 2.0], &[2, 2]).unwrap();
     
     let output = sigmoid.forward(&[&input]).unwrap();
     assert_eq!(output.shape(), &[2, 2]);
@@ -55,7 +55,7 @@ fn test_sigmoid_activation() {
 #[test]
 fn test_relu_activation() {
     let relu = ReLU::new();
-    let input = Tensor::from_vec(vec![-2.0, -1.0, 0.0, 1.0, 2.0], &[5]);
+    let input = Tensor::from_vec(vec![-2.0, -1.0, 0.0, 1.0, 2.0], &[5]).unwrap();
     
     let output = relu.forward(&[&input]).unwrap();
     assert_eq!(output.shape(), &[5]);
@@ -72,7 +72,7 @@ fn test_relu_activation() {
 #[test]
 fn test_softmax_activation() {
     let softmax = Softmax::new(-1);
-    let input = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]);
+    let input = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]).unwrap();
     
     let output = softmax.forward(&[&input]).unwrap();
     assert_eq!(output.shape(), &[3]);
@@ -86,8 +86,8 @@ fn test_softmax_activation() {
 #[test]
 fn test_mse_loss() {
     let loss_fn = MSELoss::new();
-    let predictions = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[4]);
-    let targets = Tensor::from_vec(vec![1.5, 2.5, 3.5, 4.5], &[4]);
+    let predictions = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[4]).unwrap();
+    let targets = Tensor::from_vec(vec![1.5, 2.5, 3.5, 4.5], &[4]).unwrap();
     
     let loss = loss_fn.loss(&predictions, &targets);
     assert_eq!(loss.shape(), &[1]);
@@ -100,8 +100,8 @@ fn test_mse_loss() {
 #[test]
 fn test_cross_entropy_loss() {
     let loss_fn = CrossEntropyLoss::new();
-    let logits = Tensor::from_vec(vec![2.0, 1.0, 0.1, 3.0, 1.0, 0.1], &[2, 3]);
-    let targets = Tensor::from_vec(vec![1.0, 0.0, 0.0, 0.0, 1.0, 0.0], &[2, 3]);
+    let logits = Tensor::from_vec(vec![2.0, 1.0, 0.1, 3.0, 1.0, 0.1], &[2, 3]).unwrap();
+    let targets = Tensor::from_vec(vec![1.0, 0.0, 0.0, 0.0, 1.0, 0.0], &[2, 3]).unwrap();
     
     let loss = loss_fn.loss(&logits, &targets);
     assert_eq!(loss.shape(), &[1]);
@@ -109,7 +109,7 @@ fn test_cross_entropy_loss() {
 
 #[test]
 fn test_functional_sigmoid() {
-    let input = Tensor::from_vec(vec![0.0, 1.0, -1.0], &[3]);
+    let input = Tensor::from_vec(vec![0.0, 1.0, -1.0], &[3]).unwrap();
     let output = functional::sigmoid(&input);
     
     assert_eq!(output.shape(), &[3]);
@@ -119,7 +119,7 @@ fn test_functional_sigmoid() {
 
 #[test]
 fn test_functional_relu() {
-    let input = Tensor::from_vec(vec![-1.0, 0.0, 1.0], &[3]);
+    let input = Tensor::from_vec(vec![-1.0, 0.0, 1.0], &[3]).unwrap();
     let output = functional::relu(&input);
     
     assert_eq!(output.shape(), &[3]);
@@ -131,7 +131,7 @@ fn test_functional_relu() {
 
 #[test]
 fn test_functional_softmax() {
-    let input = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]);
+    let input = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]).unwrap();
     let output = functional::softmax(&input, -1);
     
     assert_eq!(output.shape(), &[3]);
@@ -142,7 +142,7 @@ fn test_functional_softmax() {
 
 #[test]
 fn test_functional_log_softmax() {
-    let input = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]);
+    let input = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]).unwrap();
     let output = functional::log_softmax(&input, -1);
     
     assert_eq!(output.shape(), &[3]);
@@ -155,8 +155,8 @@ fn test_functional_log_softmax() {
 
 #[test]
 fn test_functional_mse_loss() {
-    let predictions = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]);
-    let targets = Tensor::from_vec(vec![1.5, 2.5, 3.5], &[3]);
+    let predictions = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]).unwrap();
+    let targets = Tensor::from_vec(vec![1.5, 2.5, 3.5], &[3]).unwrap();
     
     let loss = functional::mse_loss(&predictions, &targets);
     assert_eq!(loss.shape(), &[1]);
@@ -168,8 +168,8 @@ fn test_functional_mse_loss() {
 
 #[test]
 fn test_functional_cross_entropy() {
-    let logits = Tensor::from_vec(vec![2.0, 1.0, 0.1], &[1, 3]);
-    let targets = Tensor::from_vec(vec![1.0, 0.0, 0.0], &[1, 3]);
+    let logits = Tensor::from_vec(vec![2.0, 1.0, 0.1], &[1, 3]).unwrap();
+    let targets = Tensor::from_vec(vec![1.0, 0.0, 0.0], &[1, 3]).unwrap();
     
     let loss = functional::cross_entropy_loss(&logits, &targets);
     assert_eq!(loss.shape(), &[1]);

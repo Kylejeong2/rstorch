@@ -21,14 +21,11 @@ pub struct CTensor {
 extern "C" {
     fn create_tensor(data: *mut c_float, shape: *mut c_int, ndim: c_int, device: *const c_char) -> *mut CTensor;
     fn delete_tensor(tensor: *mut CTensor);
-    fn delete_data(tensor: *mut CTensor);
-    fn delete_shape(tensor: *mut CTensor);
     fn delete_strides(tensor: *mut CTensor);
     fn delete_device(tensor: *mut CTensor);
     
     fn ones_like_tensor(tensor: *mut CTensor) -> *mut CTensor;
     fn zeros_like_tensor(tensor: *mut CTensor) -> *mut CTensor;
-    fn reshape_tensor(tensor: *mut CTensor, new_shape: *mut c_int, new_ndim: c_int) -> *mut CTensor;
     
     fn add_tensor(a: *mut CTensor, b: *mut CTensor) -> *mut CTensor;
     fn sub_tensor(a: *mut CTensor, b: *mut CTensor) -> *mut CTensor;
@@ -36,12 +33,7 @@ extern "C" {
     fn scalar_mul_tensor(tensor: *mut CTensor, scalar: c_float) -> *mut CTensor;
     fn matmul_tensor(a: *mut CTensor, b: *mut CTensor) -> *mut CTensor;
     fn sum_tensor(tensor: *mut CTensor, axis: c_int, keepdim: bool) -> *mut CTensor;
-    
-    fn add_broadcasted_tensor(a: *mut CTensor, b: *mut CTensor) -> *mut CTensor;
-    fn sub_broadcasted_tensor(a: *mut CTensor, b: *mut CTensor) -> *mut CTensor;
-    
-    fn get_item(tensor: *mut CTensor, indices: *mut c_int) -> c_float;
-    fn to_device(tensor: *mut CTensor, device: *const c_char);
+        
     fn get_data(tensor: *mut CTensor) -> *mut c_float;
     
     fn sigmoid_tensor(tensor: *mut CTensor) -> *mut CTensor;

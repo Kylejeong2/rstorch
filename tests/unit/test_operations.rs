@@ -7,7 +7,7 @@ use rstorch::tensor::Tensor;
 
 #[test]
 fn test_tensor_creation() {
-    let tensor = Tensor::new(Some(vec![1.0, 2.0, 3.0]), "cpu", false);
+    let tensor = Tensor::new(Some(vec![1.0, 2.0, 3.0]), "cpu", false).unwrap();
     assert_eq!(tensor.shape(), &[3]);
     assert_eq!(tensor.ndim, 1);
     assert_eq!(tensor.device, "cpu");
@@ -18,7 +18,7 @@ fn test_tensor_creation() {
 #[test]
 fn test_tensor_from_vec() {
     let data = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
-    let tensor = Tensor::from_vec(data.clone(), &[2, 3]);
+    let tensor = Tensor::from_vec(data.clone(), &[2, 3]).unwrap();
     
     assert_eq!(tensor.shape(), &[2, 3]);
     assert_eq!(tensor.ndim, 2);
@@ -27,7 +27,7 @@ fn test_tensor_from_vec() {
 
 #[test]
 fn test_tensor_zeros() {
-    let tensor = Tensor::zeros(&[3, 4]);
+    let tensor = Tensor::zeros(&[3, 4]).unwrap();
     assert_eq!(tensor.shape(), &[3, 4]);
     assert_eq!(tensor.numel, 12);
     
@@ -37,8 +37,8 @@ fn test_tensor_zeros() {
 
 #[test]
 fn test_tensor_ones_like() {
-    let original = Tensor::zeros(&[2, 3]);
-    let ones = original.ones_like();
+    let original = Tensor::zeros(&[2, 3]).unwrap();
+    let ones = original.ones_like().unwrap();
     
     assert_eq!(ones.shape(), original.shape());
     let data = ones.to_vec();
@@ -47,8 +47,8 @@ fn test_tensor_ones_like() {
 
 #[test]
 fn test_tensor_zeros_like() {
-    let original = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]);
-    let zeros = original.zeros_like();
+    let original = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]).unwrap();
+    let zeros = original.zeros_like().unwrap();
     
     assert_eq!(zeros.shape(), original.shape());
     let data = zeros.to_vec();
@@ -57,8 +57,8 @@ fn test_tensor_zeros_like() {
 
 #[test]
 fn test_tensor_add() {
-    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]);
-    let b = Tensor::from_vec(vec![4.0, 5.0, 6.0], &[3]);
+    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]).unwrap();
+    let b = Tensor::from_vec(vec![4.0, 5.0, 6.0], &[3]).unwrap();
     
     let c = a.add(&b);
     assert_eq!(c.to_vec(), vec![5.0, 7.0, 9.0]);
@@ -66,8 +66,8 @@ fn test_tensor_add() {
 
 #[test]
 fn test_tensor_sub() {
-    let a = Tensor::from_vec(vec![5.0, 7.0, 9.0], &[3]);
-    let b = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]);
+    let a = Tensor::from_vec(vec![5.0, 7.0, 9.0], &[3]).unwrap();
+    let b = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]).unwrap();
     
     let c = a.sub(&b);
     assert_eq!(c.to_vec(), vec![4.0, 5.0, 6.0]);
@@ -75,8 +75,8 @@ fn test_tensor_sub() {
 
 #[test]
 fn test_tensor_mul() {
-    let a = Tensor::from_vec(vec![2.0, 3.0, 4.0], &[3]);
-    let b = Tensor::from_vec(vec![5.0, 6.0, 7.0], &[3]);
+    let a = Tensor::from_vec(vec![2.0, 3.0, 4.0], &[3]).unwrap();
+    let b = Tensor::from_vec(vec![5.0, 6.0, 7.0], &[3]).unwrap();
     
     let c = a.mul(&b);
     assert_eq!(c.to_vec(), vec![10.0, 18.0, 28.0]);
@@ -84,7 +84,7 @@ fn test_tensor_mul() {
 
 #[test]
 fn test_tensor_scalar_mul() {
-    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]);
+    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]).unwrap();
     let b = a.scalar_mul(2.5);
     
     assert_eq!(b.to_vec(), vec![2.5, 5.0, 7.5]);
@@ -92,8 +92,8 @@ fn test_tensor_scalar_mul() {
 
 #[test]
 fn test_tensor_matmul() {
-    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[2, 2]);
-    let b = Tensor::from_vec(vec![5.0, 6.0, 7.0, 8.0], &[2, 2]);
+    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[2, 2]).unwrap();
+    let b = Tensor::from_vec(vec![5.0, 6.0, 7.0, 8.0], &[2, 2]).unwrap();
     
     let c = a.matmul(&b);
     assert_eq!(c.shape(), &[2, 2]);
@@ -103,7 +103,7 @@ fn test_tensor_matmul() {
 
 #[test]
 fn test_tensor_sum() {
-    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0], &[2, 3]);
+    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0], &[2, 3]).unwrap();
     
     // Sum all elements
     let sum_all = a.sum(-1, false);
@@ -127,7 +127,7 @@ fn test_tensor_sum() {
 
 #[test]
 fn test_tensor_sigmoid() {
-    let a = Tensor::from_vec(vec![0.0, 1.0, -1.0], &[3]);
+    let a = Tensor::from_vec(vec![0.0, 1.0, -1.0], &[3]).unwrap();
     let sig = a.sigmoid();
     
     let values = sig.to_vec();
@@ -138,7 +138,7 @@ fn test_tensor_sigmoid() {
 
 #[test]
 fn test_tensor_relu() {
-    let a = Tensor::from_vec(vec![-2.0, -1.0, 0.0, 1.0, 2.0], &[5]);
+    let a = Tensor::from_vec(vec![-2.0, -1.0, 0.0, 1.0, 2.0], &[5]).unwrap();
     let relu = a.relu();
     
     assert_eq!(relu.to_vec(), vec![0.0, 0.0, 0.0, 1.0, 2.0]);
@@ -146,7 +146,7 @@ fn test_tensor_relu() {
 
 #[test]
 fn test_tensor_log() {
-    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]);
+    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]).unwrap();
     let log = a.log();
     
     let values = log.to_vec();
@@ -157,7 +157,7 @@ fn test_tensor_log() {
 
 #[test]
 fn test_tensor_softmax() {
-    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]);
+    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]).unwrap();
     let softmax = a.softmax(-1);
     
     let values = softmax.to_vec();
@@ -171,7 +171,7 @@ fn test_tensor_softmax() {
 
 #[test]
 fn test_tensor_clone() {
-    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]);
+    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]).unwrap();
     let b = a.clone();
     
     assert_eq!(a.shape(), b.shape());
@@ -181,8 +181,8 @@ fn test_tensor_clone() {
 
 #[test]
 fn test_tensor_operators() {
-    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]);
-    let b = Tensor::from_vec(vec![4.0, 5.0, 6.0], &[3]);
+    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]).unwrap();
+    let b = Tensor::from_vec(vec![4.0, 5.0, 6.0], &[3]).unwrap();
     
     // Test Add operator
     let c = &a + &b;
@@ -203,10 +203,10 @@ fn test_tensor_operators() {
 
 #[test]
 fn test_tensor_grad_tracking() {
-    let mut a = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]);
+    let mut a = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]).unwrap();
     a.requires_grad = true;
     
-    let b = Tensor::from_vec(vec![4.0, 5.0, 6.0], &[3]);
+    let b = Tensor::from_vec(vec![4.0, 5.0, 6.0], &[3]).unwrap();
     
     // Operations should track gradients
     let c = a.add(&b);
@@ -218,11 +218,11 @@ fn test_tensor_grad_tracking() {
 
 #[test]
 fn test_tensor_zero_grad() {
-    let mut a = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]);
+    let mut a = Tensor::from_vec(vec![1.0, 2.0, 3.0], &[3]).unwrap();
     a.requires_grad = true;
     
     // Set some gradient
-    a.grad = Some(Box::new(Tensor::from_vec(vec![0.1, 0.2, 0.3], &[3])));
+    a.grad = Some(Box::new(Tensor::from_vec(vec![0.1, 0.2, 0.3], &[3]).unwrap()));
     assert!(a.grad.is_some());
     
     // Zero the gradient
@@ -233,14 +233,14 @@ fn test_tensor_zero_grad() {
 #[test] 
 fn test_tensor_shape_operations() {
     // Test various shape-related operations
-    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0], &[2, 3]);
+    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0], &[2, 3]).unwrap();
     
     assert_eq!(a.shape(), &[2, 3]);
     assert_eq!(a.ndim, 2);
     assert_eq!(a.numel, 6);
     
     // Test with different shapes
-    let b = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[1, 1, 4]);
+    let b = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[1, 1, 4]).unwrap();
     assert_eq!(b.shape(), &[1, 1, 4]);
     assert_eq!(b.ndim, 3);
     assert_eq!(b.numel, 4);

@@ -5,7 +5,7 @@
 
 use rstorch::{
     Tensor,
-    nn::{Linear, ReLU, Sigmoid, Softmax, MSELoss, CrossEntropyLoss, Module, Parameter},
+    nn::{Linear, ReLU, Sigmoid, Softmax, MSELoss, CrossEntropyLoss, Module},
     optim::{SGD, OptimizerParams, Optimizer}
 };
 
@@ -155,7 +155,7 @@ fn test_multi_layer_network() {
 #[test]
 fn test_optimizer_integration() {
     // Test optimizer with actual parameters
-    let mut layer = Linear::new(2, 1, true);
+    let layer = Linear::new(2, 1, true);
     
     // Create optimizer parameters
     let mut params_vec = Vec::new();
@@ -220,20 +220,20 @@ fn test_parameter_updates() {
     let mut layer = Linear::new(2, 1, true);
     
     // Get initial parameter values
-    let initial_params: Vec<Vec<f32>> = layer.parameters()
+    let _initial_params: Vec<Vec<f32>> = layer.parameters()
         .iter()
         .map(|p| p.data().to_vec())
         .collect();
 
     // Test parameter modification through set_data
-    let params_mut = layer.parameters_mut();
+    let mut params_mut = layer.parameters_mut();
     if let Some(first_param) = params_mut.get_mut(0) {
         let new_data = vec![1.0, 2.0]; // Assuming weight is [1, 2] shape
         let result = first_param.set_data(new_data.clone());
         
         if result.is_ok() {
             // Verify the parameter was updated
-            let updated_data = first_param.data().to_vec();
+            let _updated_data = first_param.data().to_vec();
             // Note: Due to the current implementation, this might not work exactly as expected
             // but the test verifies the interface exists
             println!("Parameter update test completed");

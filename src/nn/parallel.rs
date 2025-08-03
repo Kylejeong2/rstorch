@@ -4,7 +4,7 @@
 // Used by: Distributed training scripts, multi-GPU training setups
 
 use crate::nn::module::{Module, Parameter};
-use crate::distributed::{broadcast_tensor_rs, allreduce_sum_tensor_rs, get_world_size};
+use crate::distributed::broadcast_tensor_rs;
 use crate::tensor::Tensor;
 use std::fmt;
 
@@ -30,14 +30,6 @@ impl DistributedDataParallel {
             // Note: This would need a way to update the parameter's data
             // which might require extending the Parameter trait
         }
-    }
-    
-    /// Everytime a gradient is assigned to some value, it calculates mean of this gradient among all devices
-    fn allreduce_grads_hook(grad: &mut Tensor) -> Tensor {
-        let mut avg_grad = grad.clone();
-        let _ = allreduce_sum_tensor_rs(&mut avg_grad);
-        let world_size = get_world_size().unwrap_or(1) as f32;
-        avg_grad / world_size
     }
     
     /// Everytime a gradient is assigned it calls this allreduce hook

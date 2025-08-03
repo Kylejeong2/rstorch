@@ -138,8 +138,6 @@ impl fmt::Display for ModuleBase {
     }
 }
 
-impl ModuleExt for ModuleBase {}
-
 impl Module for ModuleBase {
     fn forward(&self, _inputs: &[&Tensor]) -> Result<Tensor, String> {
         Err("forward method not implemented".to_string())
@@ -208,8 +206,3 @@ impl Module for ModuleBase {
     }
 }
 
-trait ModuleExt {
-    fn inner_repr(&self) -> String {
-        String::new()
-    }
-}

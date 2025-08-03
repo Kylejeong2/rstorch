@@ -70,7 +70,7 @@ mod mock_c_functions {
 
 #[test]
 fn test_tensor_creation() {
-    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[2, 2]);
+    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[2, 2]).unwrap();
     assert_eq!(a.shape(), &[2, 2]);
     assert_eq!(a.ndim, 2);
     assert_eq!(a.numel, 4);
@@ -79,8 +79,8 @@ fn test_tensor_creation() {
 
 #[test]
 fn test_add_interface() {
-    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[2, 2]);
-    let b = Tensor::from_vec(vec![4.0, 3.0, 2.0, 1.0], &[2, 2]);
+    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[2, 2]).unwrap();
+    let b = Tensor::from_vec(vec![4.0, 3.0, 2.0, 1.0], &[2, 2]).unwrap();
     let c = &a + &b;
     
     // With mock functions, we can't test actual values, but we can test interface
@@ -90,8 +90,8 @@ fn test_add_interface() {
 
 #[test]
 fn test_matmul_interface() {
-    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[2, 2]);
-    let b = Tensor::from_vec(vec![4.0, 3.0, 2.0, 1.0], &[2, 2]);
+    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[2, 2]).unwrap();
+    let b = Tensor::from_vec(vec![4.0, 3.0, 2.0, 1.0], &[2, 2]).unwrap();
     let c = a.matmul(&b);
     
     // Test that result has correct shape for 2x2 @ 2x2 = 2x2
@@ -101,7 +101,7 @@ fn test_matmul_interface() {
 
 #[test]
 fn test_sum_interface() {
-    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[2, 2]);
+    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[2, 2]).unwrap();
     let s = a.sum(-1, false);  // Sum all elements (axis=-1 means all)
     
     // Sum should produce a scalar (1D tensor with 1 element)

@@ -12,13 +12,13 @@ use std::env;
 fn test_get_rank_default() {
     // When environment variable is not set, should return 0
     env::remove_var("OMPI_COMM_WORLD_RANK");
-    assert_eq!(get_rank(), 0);
+    assert_eq!(get_rank(), Ok(0));
 }
 
 #[test]
 fn test_get_rank_from_env() {
     env::set_var("OMPI_COMM_WORLD_RANK", "3");
-    assert_eq!(get_rank(), 3);
+    assert_eq!(get_rank(), Ok(3));
     env::remove_var("OMPI_COMM_WORLD_RANK");
 }
 
@@ -26,13 +26,13 @@ fn test_get_rank_from_env() {
 fn test_get_world_size_default() {
     // When environment variable is not set, should return 1
     env::remove_var("OMPI_COMM_WORLD_SIZE");
-    assert_eq!(get_world_size(), 1);
+    assert_eq!(get_world_size(), Ok(1));
 }
 
 #[test]
 fn test_get_world_size_from_env() {
     env::set_var("OMPI_COMM_WORLD_SIZE", "4");
-    assert_eq!(get_world_size(), 4);
+    assert_eq!(get_world_size(), Ok(4));
     env::remove_var("OMPI_COMM_WORLD_SIZE");
 }
 
@@ -42,7 +42,7 @@ fn test_distributed_data_parallel_creation() {
     let ddp = DistributedDataParallel::new(Box::new(linear));
     
     // Should be able to use it as a regular module
-    let input = Tensor::zeros(&[2, 10]);
+    let input = Tensor::zeros(&[2, 10]).unwrap();
     let result = ddp.forward(&[&input]);
     assert!(result.is_ok());
 }
@@ -52,7 +52,7 @@ fn test_distributed_data_parallel_forward() {
     let linear = Linear::new(3, 2, true);
     let ddp = DistributedDataParallel::new(Box::new(linear));
     
-    let input = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0], &[2, 3]);
+    let input = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0], &[2, 3]).unwrap();
     let output = ddp.forward(&[&input]).unwrap();
     
     assert_eq!(output.shape(), &[2, 2]);
@@ -90,9 +90,9 @@ mod distributed_integration {
     #[ignore] // This test requires MPI to be set up
     fn test_init_process_group() {
         // This would only work in an actual distributed environment
-        init_process_group_rs(0, 1);
-        assert_eq!(get_rank(), 0);
-        assert_eq!(get_world_size(), 1);
+        init_process_group_rs(0, 1).ok();
+        assert_eq!(get_rank(), Ok(0));
+        assert_eq!(get_world_size(), Ok(1));
     }
     
     #[test]

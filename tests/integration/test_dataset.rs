@@ -190,3 +190,31 @@ fn test_example_field_access() {
     assert_eq!(example.data[1], 2.0);
     assert_eq!(example.data[2], 3.0);
 }
+
+#[test]
+fn test_dataloader_with_sampler_trait() {
+    use rstorch::utils::data::{SequentialSampler, RandomSampler};
+    
+    let dataset = create_test_dataset();
+    
+    // Test with SequentialSampler
+    let sequential_sampler = Box::new(SequentialSampler);
+    let dataloader = DataLoader::new_with_sampler(&dataset, 3, sequential_sampler);
+    
+    let batches: Vec<_> = dataloader.collect();
+    assert_eq!(batches.len(), 4);
+    
+    // First batch should have indices 0, 1, 2 in order
+    let first_batch = &batches[0];
+    assert_eq!(first_batch.get(0).unwrap().data[0], 0.0);
+    assert_eq!(first_batch.get(1).unwrap().data[0], 1.0);
+    assert_eq!(first_batch.get(2).unwrap().data[0], 2.0);
+    
+    // Test with RandomSampler
+    let random_sampler = Box::new(RandomSampler);
+    let dataloader = DataLoader::new_with_sampler(&dataset, 10, random_sampler);
+    
+    let batches: Vec<_> = dataloader.collect();
+    assert_eq!(batches.len(), 1); // All examples in one batch
+    assert_eq!(batches[0].len(), 10); // All 10 examples
+}

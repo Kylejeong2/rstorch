@@ -25,18 +25,26 @@ pub fn init_process_group_rs(rank: usize, world_size: usize) -> Result<(), Strin
 
 /// Return the integer rank of the current process.
 pub fn get_rank() -> Result<usize, String> {
-    Ok(env::var("OMPI_COMM_WORLD_RANK")
-        .map_err(|_| "OMPI_COMM_WORLD_RANK environment variable not set".to_string())?
-        .parse::<usize>()
-        .map_err(|_| "Failed to parse OMPI_COMM_WORLD_RANK as integer".to_string())?)
+    let rank = match env::var("OMPI_COMM_WORLD_RANK") {
+        Ok(rank_str) => {
+            rank_str.parse::<usize>()
+                .unwrap_or(0) // Return default rank 0 if parsing fails
+        }
+        Err(_) => 0 // Return default rank 0 if env var not set
+    };
+    Ok(rank)
 }
 
 /// Return total number of processes in the group.
 pub fn get_world_size() -> Result<usize, String> {
-    Ok(env::var("OMPI_COMM_WORLD_SIZE")
-        .map_err(|_| "OMPI_COMM_WORLD_SIZE environment variable not set".to_string())?
-        .parse::<usize>()
-        .map_err(|_| "Failed to parse OMPI_COMM_WORLD_SIZE as integer".to_string())?)
+    let world_size = match env::var("OMPI_COMM_WORLD_SIZE") {
+        Ok(size_str) => {
+            size_str.parse::<usize>()
+                .unwrap_or(1) // Return default world size 1 if parsing fails
+        }
+        Err(_) => 1 // Return default world size 1 if env var not set
+    };
+    Ok(world_size)
 }
 
 pub fn broadcast_tensor_rs(tensor: &mut Tensor, src: usize) -> Result<(), String> {

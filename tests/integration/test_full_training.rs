@@ -3,7 +3,7 @@
 // Connected to: All main library components (tensor, nn, optim, utils)
 // Used by: Integration test suite to verify complete library functionality
 
-use rstorch::{Tensor, nn::{Linear, ReLU, MSELoss, Module, Parameter}, optim::{SGD, OptimizerParams, Optimizer}};
+use rstorch::{Tensor, nn::{Linear, ReLU, MSELoss, Module}, optim::{SGD, OptimizerParams, Optimizer}};
 
 #[test]
 fn test_complete_training_pipeline() {
@@ -17,9 +17,9 @@ fn test_complete_training_pipeline() {
     ];
 
     // Create a simple neural network: Linear(1, 10) -> ReLU -> Linear(10, 1)
-    let mut layer1 = Linear::new(1, 10, true);
+    let layer1 = Linear::new(1, 10, true);
     let activation = ReLU::new();
-    let mut layer2 = Linear::new(10, 1, true);
+    let layer2 = Linear::new(10, 1, true);
     let criterion = MSELoss::new();
 
     // Create optimizer

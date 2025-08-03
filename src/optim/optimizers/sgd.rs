@@ -11,7 +11,7 @@ pub struct SGD {
     pub params: OptimizerParams,
     pub lr: f32,
     pub momentum: f32,
-    velocity_cache: Vec<Tensor>,
+    pub velocity_cache: Vec<Tensor>,
 }
 
 impl SGD {

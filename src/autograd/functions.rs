@@ -159,8 +159,18 @@ mod ops {
 
     impl Backward for PowBackward {
         fn backward(&self, gradient: &ArrayD<f32>) -> Vec<ArrayD<f32>> {
-            let grad_base = gradient * &self.exponent * self.base.mapv(|x| x.powf(self.exponent[[]] - 1.0));
-            let grad_exponent = gradient * self.base.mapv(|x| x.powf(self.exponent[[]]) * x.ln());
+            // Element-wise gradient for base: gradient * exponent * base^(exponent-1)
+            let mut grad_base = gradient.clone();
+            for ((exp_val, base_val), grad_val) in self.exponent.iter().zip(self.base.iter()).zip(grad_base.iter_mut()) {
+                *grad_val = *grad_val * exp_val * base_val.powf(exp_val - 1.0);
+            }
+            
+            // Element-wise gradient for exponent: gradient * base^exponent * ln(base)
+            let mut grad_exponent = gradient.clone();
+            for ((exp_val, base_val), grad_val) in self.exponent.iter().zip(self.base.iter()).zip(grad_exponent.iter_mut()) {
+                *grad_val = *grad_val * base_val.powf(*exp_val) * base_val.ln();
+            }
+            
             vec![grad_base, grad_exponent]
         }
     }

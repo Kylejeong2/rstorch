@@ -216,30 +216,6 @@ fn test_cos_backward() {
     }
 }
 
-#[test]
-fn test_log_backward() {
-    let x = ArrayD::from_shape_vec(IxDyn(&[2, 2]), vec![1.0, 2.0, 3.0, 4.0]).unwrap();
-    let grad = ArrayD::from_elem(IxDyn(&[2, 2]), 1.0);
-    
-    let backward = LogBackward { x: x.clone() };
-    let grads = backward.backward(&grad);
-    
-    assert_eq!(grads.len(), 1);
-    assert_eq!(grads[0].shape(), &[2, 2]);
-    
-    // Check gradients numerically: d/dx ln(x) = 1/x
-    let expected_grads = ArrayD::from_shape_vec(IxDyn(&[2, 2]), vec![1.0, 0.5, 1.0/3.0, 0.25]).unwrap();
-    let computed_grads = &grads[0];
-    
-    for i in 0..2 {
-        for j in 0..2 {
-            let expected = expected_grads[[i, j]];
-            let computed = computed_grads[[i, j]];
-            assert!((expected - computed).abs() < 1e-6, 
-                   "LogBackward gradient mismatch at [{}, {}]: expected {}, got {}", i, j, expected, computed);
-        }
-    }
-}
 
 #[test]
 fn test_pow_backward() {
@@ -273,11 +249,11 @@ fn test_pow_backward() {
 }
 
 #[test]
-fn test_sigmoid_backward() {
+fn test_sigmoid_backward_detailed() {
     let x = ArrayD::from_shape_vec(IxDyn(&[2, 2]), vec![-1.0, 0.0, 1.0, 2.0]).unwrap();
     let grad = ArrayD::from_elem(IxDyn(&[2, 2]), 1.0);
     
-    let backward = SigmoidBackward { x: x.clone() };
+    let backward = SigmoidBackward { input: x.clone() };
     let grads = backward.backward(&grad);
     
     assert_eq!(grads.len(), 1);

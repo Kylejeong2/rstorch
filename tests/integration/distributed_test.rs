@@ -48,13 +48,13 @@ mod mock_c_functions {
 #[test]
 fn test_get_rank_default() {
     env::remove_var("OMPI_COMM_WORLD_RANK");
-    assert_eq!(get_rank(), 0);
+    assert_eq!(get_rank(), Ok(0));
 }
 
 #[test]
 fn test_get_world_size_default() {
     env::remove_var("OMPI_COMM_WORLD_SIZE");
-    assert_eq!(get_world_size(), 1);
+    assert_eq!(get_world_size(), Ok(1));
 }
 
 #[test]
@@ -62,8 +62,8 @@ fn test_rank_and_world_size_from_env() {
     env::set_var("OMPI_COMM_WORLD_RANK", "2");
     env::set_var("OMPI_COMM_WORLD_SIZE", "4");
     
-    assert_eq!(get_rank(), 2);
-    assert_eq!(get_world_size(), 4);
+    assert_eq!(get_rank(), Ok(2));
+    assert_eq!(get_world_size(), Ok(4));
     
     env::remove_var("OMPI_COMM_WORLD_RANK");
     env::remove_var("OMPI_COMM_WORLD_SIZE");
@@ -78,8 +78,8 @@ fn test_invalid_env_vars() {
     env::set_var("OMPI_COMM_WORLD_RANK", "invalid");
     env::set_var("OMPI_COMM_WORLD_SIZE", "also_invalid");
     
-    assert_eq!(get_rank(), 0);
-    assert_eq!(get_world_size(), 1);
+    assert_eq!(get_rank(), Ok(0));
+    assert_eq!(get_world_size(), Ok(1));
     
     env::remove_var("OMPI_COMM_WORLD_RANK");
     env::remove_var("OMPI_COMM_WORLD_SIZE");
@@ -110,7 +110,7 @@ mod mock_distributed {
     fn test_init_process_group() {
         // This test verifies the function can be called without panicking
         // Since we have mock implementations, it should work
-        init_process_group_rs(1, 4);
+        init_process_group_rs(1, 4).ok();
         // If we get here without panic, the test passes
     }
     
@@ -118,11 +118,11 @@ mod mock_distributed {
     fn test_broadcast_tensor_interface() {
         use rstorch::distributed::broadcast_tensor_rs;
         
-        let mut tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[2, 2]);
+        let mut tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[2, 2]).unwrap();
         let original_shape = tensor.shape().to_vec();
         
         // Call broadcast - with mock implementation it should be a no-op
-        broadcast_tensor_rs(&mut tensor, 0);
+        broadcast_tensor_rs(&mut tensor, 0).ok();
         
         // Verify tensor structure is unchanged (mock doesn't modify shape)
         assert_eq!(tensor.shape(), &[2, 2]);
@@ -133,11 +133,11 @@ mod mock_distributed {
     fn test_allreduce_sum_tensor_interface() {
         use rstorch::distributed::allreduce_sum_tensor_rs;
         
-        let mut tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[2, 2]);
+        let mut tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[2, 2]).unwrap();
         let original_shape = tensor.shape().to_vec();
         
         // Call allreduce - with mock implementation it should be a no-op
-        allreduce_sum_tensor_rs(&mut tensor);
+        allreduce_sum_tensor_rs(&mut tensor).ok();
         
         // Verify tensor structure is unchanged (mock doesn't modify shape)
         assert_eq!(tensor.shape(), &[2, 2]);
@@ -152,17 +152,17 @@ fn test_distributed_workflow() {
     env::set_var("OMPI_COMM_WORLD_SIZE", "2");
     
     // Initialize process group
-    init_process_group_rs(get_rank(), get_world_size());
+    init_process_group_rs(get_rank().unwrap(), get_world_size().unwrap()).ok();
     
     // Create a test tensor
-    let mut tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[2, 2]);
+    let mut tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], &[2, 2]).unwrap();
     
     // Verify we can call distributed operations
     // Note: These use mock implementations so they won't actually do distributed ops
     use rstorch::distributed::{broadcast_tensor_rs, allreduce_sum_tensor_rs};
     
-    broadcast_tensor_rs(&mut tensor, 0);
-    allreduce_sum_tensor_rs(&mut tensor);
+    broadcast_tensor_rs(&mut tensor, 0).ok();
+    allreduce_sum_tensor_rs(&mut tensor).ok();
     
     // Clean up
     env::remove_var("OMPI_COMM_WORLD_RANK");
