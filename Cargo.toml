@@ -71,4 +71,12 @@ path = "tests/integration/distributed_test.rs"
 
 [[test]]
 name = "test_distributed"
-path = "tests/integration/test_distributed.rs" 
+path = "tests/integration/test_distributed.rs"
+
+[[test]]
+name = "test_mnist_training"
+path = "tests/integration/test_mnist_training.rs"
+
+[[test]]
+name = "test_cuda_performance"
+path = "tests/integration/test_cuda_performance.rs" 
